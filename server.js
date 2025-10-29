@@ -25,14 +25,20 @@ const corsOptions = {
   origin: function (origin, callback) {
     const normalizedOrigin = stripTrailingSlash(origin);
     if (!origin || allowedOrigins.includes(normalizedOrigin)) {
+      // allow requests with no origin (like mobile apps, curl) or matching origin
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      // do not error; simply disable CORS for this request
+      callback(null, false);
     }
   }, // frontend URL
-  credentials: true
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization','X-Requested-With'],
+  optionsSuccessStatus: 204
 };
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // API routes
 app.use("/api/v1/user", userRoute);
