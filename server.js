@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5174', // frontend URL
+  origin: process.env.FRONTEND_URL || 'https://job-portal-ten-khaki.vercel.app/', // frontend URL
   credentials: true
 };
 app.use(cors(corsOptions));
