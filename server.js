@@ -86,6 +86,22 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error("Request failed:", err);
     const message = err?.message || "Internal Server Error";
+    // Ensure CORS headers even on errors that occur before app() (e.g., DB connect)
+    try {
+      const origin = req.headers?.origin ? stripTrailingSlash(req.headers.origin) : undefined;
+      if (origin && allowedOrigins.includes(origin)) {
+        if (!res.headersSent) {
+          res.setHeader('Access-Control-Allow-Origin', origin);
+          res.setHeader('Vary', 'Origin');
+          res.setHeader('Access-Control-Allow-Credentials', 'true');
+          res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With');
+        }
+      }
+    } catch (_) {
+      // ignore header setting errors
+    }
     return res.status(500).json({ success: false, message });
   }
 }
+
