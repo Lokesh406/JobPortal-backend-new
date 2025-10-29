@@ -17,8 +17,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const stripTrailingSlash = (u) => (u ? u.replace(/\/+$/, "") : u);
+const allowedOrigins = (process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(s => stripTrailingSlash(s.trim()))
+  : ['http://localhost:5173', 'http://localhost:5174']);
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'https://job-portal-ten-khaki.vercel.app/', // frontend URL
+  origin: function (origin, callback) {
+    const normalizedOrigin = stripTrailingSlash(origin);
+    if (!origin || allowedOrigins.includes(normalizedOrigin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }, // frontend URL
   credentials: true
 };
 app.use(cors(corsOptions));
