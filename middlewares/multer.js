@@ -30,7 +30,7 @@ const imageFileFilter = (req, file, cb) => {
     if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Only image files (JPEG, PNG, GIF, WebP) are allowed'), false);
+        cb(null, false);
     }
 };
 
